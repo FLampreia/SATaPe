@@ -1,9 +1,9 @@
-import { BadRequestException, Body, Controller, Get, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { TasksService } from './tasks.service.js';
 
 @Controller('tasks')
 export class TasksController {
-    constructor(private readonly taskService: TasksService) {}
+    constructor(private readonly taskService: TasksService) { }
 
     @Get()
     findAll() {
@@ -32,7 +32,7 @@ export class TasksController {
                     'The description should be text.'
                 );
             }
-            
+
             description = body.description.trim()
         }
 
@@ -40,5 +40,13 @@ export class TasksController {
             body.title.trim(),
             description
         );
+    }
+
+    @Delete(':id')
+    @HttpCode(204)
+    async remove(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<void> {
+        await this.taskService.remove(id);
     }
 }

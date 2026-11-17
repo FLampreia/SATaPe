@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskEntity } from './task.entity.js';
 import { Repository } from 'typeorm';
@@ -25,6 +25,16 @@ export class TasksService {
             description: description ?? null,
         });
 
-        return  this.taskRepository.save(task)
+        return this.taskRepository.save(task)
+    }
+
+    async remove(
+        id: number,
+    ): Promise<void> {
+        const result = await this.taskRepository.delete(id)
+
+        if (result.affected === 0) {
+            throw new NotFoundException('Task not found.');
+        }
     }
 }

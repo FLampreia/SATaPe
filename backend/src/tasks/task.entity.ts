@@ -4,7 +4,7 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeor
 @Entity('tasks')
 export class TaskEntity {
     @PrimaryGeneratedColumn()
-    id!: number;
+    id!: number; // TODO colocar como uuid
 
     @Column({ type: 'varchar', length: 255 })
     title!: string;
