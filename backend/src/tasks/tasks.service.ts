@@ -1,29 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { Task } from './task.js';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TaskEntity } from './task.entity.js';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TasksService {
-    private tasks: Task[] = [];
-    private nextId = 1;
+    constructor(
+        @InjectRepository(TaskEntity)
+        private readonly taskRepository: Repository<TaskEntity>,
+    ) { }
 
-    findAll(): Task[] {
-        return this.tasks;
+    findAll(): Promise<TaskEntity[]> {
+        return this.taskRepository.find({
+            order: { id: 'ASC' },
+        });
     }
 
-    create(title:string, description?:string): Task {
-        const task: Task = {
-            id: this.nextId++,
-            title: title,
-            created_at: new Date,
-            completed: false
-        }
+    create(
+        title: string,
+        description?: string
+    ): Promise<TaskEntity> {
+        const task = this.taskRepository.create({
+            title,
+            description: description ?? null,
+        });
 
-        if (description !== undefined) {
-            task.description = description;
-        }
-
-        this.tasks.push(task);
-
-        return task;
+        return  this.taskRepository.save(task)
     }
 }
